@@ -12,12 +12,13 @@
 <meta property="og:url" content="http://pickknow.github.io/2016/06/03/middleware/index.html">
 <meta property="og:site_name" content="pickknow">
 <meta property="og:description" content="在开始说中间件之前我们先来看看经典的面向对象设计中的一些场景，然后我们在来看看用中间件如何来处理这些问题，他们之间有什么区别。而中间件的方式又有何优势，又能替我们解决那些问题。如何通过中间件来解决负责的业务逻辑，以及让你的代码更加的优雅">
+<meta property="og:image" content="http://o80w6y0vq.bkt.clouddn.com/githubOOP1.png">
 <meta property="og:image" content="https://camo.githubusercontent.com/d80cf3b511ef4898bcde9a464de491fa15a50d06/68747470733a2f2f7261772e6769746875622e636f6d2f66656e676d6b322f6b6f612d67756964652f6d61737465722f6f6e696f6e2e706e67">
-<meta property="og:updated_time" content="2016-06-03T03:17:15.106Z">
+<meta property="og:updated_time" content="2016-06-03T03:23:07.684Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="什么是middleware中间件，为什么你需要了解中间件">
 <meta name="twitter:description" content="在开始说中间件之前我们先来看看经典的面向对象设计中的一些场景，然后我们在来看看用中间件如何来处理这些问题，他们之间有什么区别。而中间件的方式又有何优势，又能替我们解决那些问题。如何通过中间件来解决负责的业务逻辑，以及让你的代码更加的优雅">
-<meta name="twitter:image" content="https://camo.githubusercontent.com/d80cf3b511ef4898bcde9a464de491fa15a50d06/68747470733a2f2f7261772e6769746875622e636f6d2f66656e676d6b322f6b6f612d67756964652f6d61737465722f6f6e696f6e2e706e67">
+<meta name="twitter:image" content="http://o80w6y0vq.bkt.clouddn.com/githubOOP1.png">
   
     <link rel="alternative" href="/atom.xml" title="pickknow" type="application/atom+xml">
   
@@ -215,7 +216,7 @@
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">class D extends C &#123;</span><br><span class="line">    public <span class="keyword">function</span> <span class="function"><span class="title">__construct</span></span>()&#123;</span><br><span class="line">        parent::__construct();</span><br><span class="line">        <span class="keyword">if</span>(!sendSms())&#123;</span><br><span class="line">            redirect(<span class="string">'sendSms'</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>好像这个问题能决绝了。只要有需要我们就可以一直这样继承下去，比如我们现在要根据用户的积分来控制用户的访问，又有一天领导突发奇想说，我么要根据用户所在地来控制访问，继续往往下继承。。。。。。</p>
 <p>问题来了。突然有一天基类A的doSomethings 需要进行调整，变更为doSomethingsV2。但是我们的D类还要继续使用原先的doSomethings。这个时候怎么办，再写一个V2版本的A类然后分别修改A 和Av2的子类。。。。。。<br>把上面的编程方式画个图来表示，</p>
-<p><img src="" alt="oop示意图"></p>
+<p><img src="http://o80w6y0vq.bkt.clouddn.com/githubOOP1.png" alt="oop示意图"></p>
 <h3 id="中间件meddleware"><a href="#中间件meddleware" class="headerlink" title="中间件meddleware"></a>中间件meddleware</h3><p>接下来我们看看中间件是如何来优雅的处理这些问题的，这里我们以laravel来进行说明，lavavel对中间件的说明如下</p>
 <blockquote>
 <p>HTTP 中间件提供一个方便的机制来过滤进入应用程序的 HTTP 请求，例如，Laravel 默认包含了一个中间件来检验用户身份验证，如果用户没有经过身份验证，中间件会将用户导向登录页面，然而，如果用户通过身份验证，中间件将会允许这个请求进一步继续前进。<br>当然，除了身份验证之外，中间件也可以被用来执行各式各样的任务，CORS 中间件负责替所有即将离开程序的响应加入适当的响应头，一个日志中间件可以记录所有传入应用程序的请求。 Laravel 框架已经内置一些中间件，包括维护、身份验证、CSRF 保护，等等</p>
