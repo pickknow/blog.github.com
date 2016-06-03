@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" >
+  <title>什么是middleware中间件，为什么你需要了解中间件 | pickknow</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="在开始说中间件之前我们先来看看经典的面向对象设计中的一些场景，然后我们在来看看用中间件如何来处理这些问题，他们之间有什么区别。而中间件的方式又有何优势，又能替我们解决那些问题。如何通过中间件来解决负责的业务逻辑，以及让你的代码更加的优雅">
+<meta property="og:type" content="article">
+<meta property="og:title" content="什么是middleware中间件，为什么你需要了解中间件">
+<meta property="og:url" content="http://pickknow.github.io/2016/06/03/middleware/index.html">
+<meta property="og:site_name" content="pickknow">
+<meta property="og:description" content="在开始说中间件之前我们先来看看经典的面向对象设计中的一些场景，然后我们在来看看用中间件如何来处理这些问题，他们之间有什么区别。而中间件的方式又有何优势，又能替我们解决那些问题。如何通过中间件来解决负责的业务逻辑，以及让你的代码更加的优雅">
+<meta property="og:image" content="https://camo.githubusercontent.com/d80cf3b511ef4898bcde9a464de491fa15a50d06/68747470733a2f2f7261772e6769746875622e636f6d2f66656e676d6b322f6b6f612d67756964652f6d61737465722f6f6e696f6e2e706e67">
+<meta property="og:updated_time" content="2016-06-03T03:17:15.106Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="什么是middleware中间件，为什么你需要了解中间件">
+<meta name="twitter:description" content="在开始说中间件之前我们先来看看经典的面向对象设计中的一些场景，然后我们在来看看用中间件如何来处理这些问题，他们之间有什么区别。而中间件的方式又有何优势，又能替我们解决那些问题。如何通过中间件来解决负责的业务逻辑，以及让你的代码更加的优雅">
+<meta name="twitter:image" content="https://camo.githubusercontent.com/d80cf3b511ef4898bcde9a464de491fa15a50d06/68747470733a2f2f7261772e6769746875622e636f6d2f66656e676d6b322f6b6f612d67756964652f6d61737465722f6f6e696f6e2e706e67">
+  
+    <link rel="alternative" href="/atom.xml" title="pickknow" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+
+<body>
+  <div id="container">
+    <div class="left-col">
+    <div class="overlay"></div>
+<div class="intrude-less">
+	<header id="header" class="inner">
+		<a href="/" class="profilepic">
+			
+			<img lazy-src="http://o80w6y0vq.bkt.clouddn.com/githubavatar.jpg" class="js-avatar">
+			
+		</a>
+
+		<hgroup>
+		  <h1 class="header-author"><a href="/">Jason</a></h1>
+		</hgroup>
+
+		
+		<p class="header-subtitle">上得了厅堂,下得了厨房,写得了代码,查得了异常,谈得了业务,跑得了市场,玩得了小清新,咽得下重口味</p>
+		
+
+		
+			<div class="switch-btn">
+				<div class="icon">
+					<div class="icon-ctn">
+						<div class="icon-wrap icon-house" data-idx="0">
+							<div class="birdhouse"></div>
+							<div class="birdhouse_holes"></div>
+						</div>
+						<div class="icon-wrap icon-ribbon hide" data-idx="1">
+							<div class="ribbon"></div>
+						</div>
+						
+						
+						<div class="icon-wrap icon-me hide" data-idx="3">
+							<div class="user"></div>
+							<div class="shoulder"></div>
+						</div>
+						
+					</div>
+					
+				</div>
+				<div class="tips-box hide">
+					<div class="tips-arrow"></div>
+					<ul class="tips-inner">
+						<li>菜单</li>
+						<li>标签</li>
+						
+						
+						<li>关于我</li>
+						
+					</ul>
+				</div>
+			</div>
+		
+
+		<div class="switch-area">
+			<div class="switch-wrap">
+				<section class="switch-part switch-part1">
+					<nav class="header-menu">
+						<ul>
+						
+							<li><a href="/">主页</a></li>
+				        
+							<li><a href="/archives">所有文章</a></li>
+				        
+						</ul>
+					</nav>
+					<nav class="header-nav">
+						<div class="social">
+							
+								<a class="github" target="_blank" href="https://github.com/pickknow" title="github">github</a>
+					        
+								<a class="weibo" target="_blank" href="http://weibo.com/2039537684/" title="weibo">weibo</a>
+					        
+						</div>
+					</nav>
+				</section>
+				
+				
+				<section class="switch-part switch-part2">
+					<div class="widget tagcloud" id="js-tagcloud">
+						<a href="/tags/gihub/" style="font-size: 10px;">gihub</a> <a href="/tags/javascript/" style="font-size: 20px;">javascript</a> <a href="/tags/php/" style="font-size: 10px;">php</a> <a href="/tags/程序设计/" style="font-size: 10px;">程序设计</a> <a href="/tags/设计模式/" style="font-size: 10px;">设计模式</a>
+					</div>
+				</section>
+				
+				
+				
+
+				
+				
+				<section class="switch-part switch-part3">
+				
+					<div id="js-aboutme">我是谁，我从哪里来，我到哪里去？我就是我，是颜色不一样的吃货…</div>
+				</section>
+				
+			</div>
+		</div>
+	</header>				
+</div>
+
+    </div>
+    <div class="mid-col">
+      <nav id="mobile-nav">
+  	<div class="overlay">
+  		<div class="slider-trigger"></div>
+  		<h1 class="header-author js-mobile-header hide">Jason</h1>
+  	</div>
+	<div class="intrude-less">
+		<header id="header" class="inner">
+			<div class="profilepic">
+			
+				<img lazy-src="http://o80w6y0vq.bkt.clouddn.com/githubavatar.jpg" class="js-avatar">
+			
+			</div>
+			<hgroup>
+			  <h1 class="header-author">Jason</h1>
+			</hgroup>
+			
+			<p class="header-subtitle">上得了厅堂,下得了厨房,写得了代码,查得了异常,谈得了业务,跑得了市场,玩得了小清新,咽得下重口味</p>
+			
+			<nav class="header-menu">
+				<ul>
+				
+					<li><a href="/">主页</a></li>
+		        
+					<li><a href="/archives">所有文章</a></li>
+		        
+		        <div class="clearfix"></div>
+				</ul>
+			</nav>
+			<nav class="header-nav">
+				<div class="social">
+					
+						<a class="github" target="_blank" href="https://github.com/pickknow" title="github">github</a>
+			        
+						<a class="weibo" target="_blank" href="http://weibo.com/2039537684/" title="weibo">weibo</a>
+			        
+				</div>
+			</nav>
+		</header>				
+	</div>
+</nav>
+
+      <div class="body-wrap"><article id="post-middleware" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2016/06/03/middleware/" class="article-date">
+  	<time datetime="2016-06-03T01:24:49.000Z" itemprop="datePublished">2016-06-03</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      什么是middleware中间件，为什么你需要了解中间件
+    </h1>
+  
+
+      </header>
+      
+      <div class="article-info article-info-post">
+        
+	<div class="article-tag tagcloud">
+		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/javascript/">javascript</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/php/">php</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/程序设计/">程序设计</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/设计模式/">设计模式</a></li></ul>
+	</div>
+
+        
+
+        <div class="clearfix"></div>
+      </div>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>在开始说中间件之前我们先来看看经典的面向对象设计中的一些场景，然后我们在来看看用中间件如何来处理这些问题，他们之间有什么区别。而中间件的方式又有何优势，又能替我们解决那些问题。<br>如何通过中间件来解决负责的业务逻辑，以及让你的代码更加的优雅<br><a id="more"></a><br>我们先从网站的路由部分说起，先看一下的一段代码</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">// 基类 进行判断用户是否登录并且根据情况挑战</span><br><span class="line">class A &#123;</span><br><span class="line">    public <span class="keyword">function</span> <span class="function"><span class="title">__construct</span></span>()&#123;</span><br><span class="line">        //<span class="keyword">do</span>Somethings()</span><br><span class="line">    &#125;      </span><br><span class="line">&#125;</span><br><span class="line">class B extends A &#123;</span><br><span class="line">    public <span class="keyword">function</span> <span class="function"><span class="title">__construct</span></span>()&#123;</span><br><span class="line">        <span class="keyword">if</span>(login()) &#123; //login为判断用户登录与否</span><br><span class="line">            redirect(<span class="string">'index'</span>);</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            redirect(<span class="string">'login'</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">// 继承A类不需要认证的</span><br><span class="line">class AA extends A &#123;</span><br><span class="line">    public <span class="keyword">function</span> <span class="function"><span class="title">__construct</span></span>()&#123;</span><br><span class="line">        parent::__construct();        </span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">// 继承B类实现用户登录认证</span><br><span class="line">class BB extends B &#123;</span><br><span class="line">    public <span class="keyword">function</span> <span class="function"><span class="title">__construct</span></span>()&#123;</span><br><span class="line">        parent::__construct();        </span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>通过继承不同的基类来实现，需不需要进行登录认证，这个时候我们又有一个新的需求。有一些特殊的操作我们需要不但用户已经登录，而且某些操作我们需要是实名认证的用户，比如需要手机认证过的，这个时候代码需要改变</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">class C extends B &#123;</span><br><span class="line">    public <span class="keyword">function</span> <span class="function"><span class="title">__construct</span></span>()&#123;</span><br><span class="line">        parent::__construct();</span><br><span class="line">        <span class="variable">$user</span> = getUser();</span><br><span class="line">        <span class="keyword">if</span>(<span class="variable">$user</span>-&gt;mobile == <span class="string">''</span>) &#123;</span><br><span class="line">            redirect(<span class="string">'phone'</span>)</span><br><span class="line">        &#125;   </span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>现在似乎可以了。我们可以让需要认证用户才能访问的来继承C类。这时候我们的需求又有增加。某些关键的任务我们需要给用户发短信验证码，好我们继续改代码</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">class D extends C &#123;</span><br><span class="line">    public <span class="keyword">function</span> <span class="function"><span class="title">__construct</span></span>()&#123;</span><br><span class="line">        parent::__construct();</span><br><span class="line">        <span class="keyword">if</span>(!sendSms())&#123;</span><br><span class="line">            redirect(<span class="string">'sendSms'</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>好像这个问题能决绝了。只要有需要我们就可以一直这样继承下去，比如我们现在要根据用户的积分来控制用户的访问，又有一天领导突发奇想说，我么要根据用户所在地来控制访问，继续往往下继承。。。。。。</p>
+<p>问题来了。突然有一天基类A的doSomethings 需要进行调整，变更为doSomethingsV2。但是我们的D类还要继续使用原先的doSomethings。这个时候怎么办，再写一个V2版本的A类然后分别修改A 和Av2的子类。。。。。。<br>把上面的编程方式画个图来表示，</p>
+<p><img src="" alt="oop示意图"></p>
+<h3 id="中间件meddleware"><a href="#中间件meddleware" class="headerlink" title="中间件meddleware"></a>中间件meddleware</h3><p>接下来我们看看中间件是如何来优雅的处理这些问题的，这里我们以laravel来进行说明，lavavel对中间件的说明如下</p>
+<blockquote>
+<p>HTTP 中间件提供一个方便的机制来过滤进入应用程序的 HTTP 请求，例如，Laravel 默认包含了一个中间件来检验用户身份验证，如果用户没有经过身份验证，中间件会将用户导向登录页面，然而，如果用户通过身份验证，中间件将会允许这个请求进一步继续前进。<br>当然，除了身份验证之外，中间件也可以被用来执行各式各样的任务，CORS 中间件负责替所有即将离开程序的响应加入适当的响应头，一个日志中间件可以记录所有传入应用程序的请求。 Laravel 框架已经内置一些中间件，包括维护、身份验证、CSRF 保护，等等</p>
+</blockquote>
+<p>我们先看看中间件的示意图</p>
+<p><img src="https://camo.githubusercontent.com/d80cf3b511ef4898bcde9a464de491fa15a50d06/68747470733a2f2f7261772e6769746875622e636f6d2f66656e676d6b322f6b6f612d67756964652f6d61737465722f6f6e696f6e2e706e67" alt="中间件"></p>
+<p>我们都知道当用户访问一个网址的时候 实际上框架自身的路由分发就是第一个中间件，他会根据用户访问的url分拣处controller 和action 以及 解析参数，接着把用户请求发送到相应的控制器，那么中间件的做法就是这样。当我们加入中间件的时候，访问控制前之前，我么你先把用户请求发送到中间件进行处理，看代码</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">Route::group([<span class="string">'middleware'</span> =&gt; [<span class="string">'isLogin'</span>]], <span class="function"><span class="title">function</span></span>()</span><br><span class="line">&#123;</span><br><span class="line">    Route::get(<span class="string">'index'</span>, <span class="function"><span class="title">function</span></span>()</span><br><span class="line">    &#123;</span><br><span class="line"></span><br><span class="line">    &#125;);</span><br><span class="line">&#125;);</span><br><span class="line">Route::group([<span class="string">'middleware'</span> =&gt; [<span class="string">'isLogin'</span>, <span class="string">'isAdmin'</span>,<span class="string">'isPhone'</span>,<span class="string">'isSendSms'</span>,<span class="string">'isInShaanxi'</span>]], <span class="function"><span class="title">function</span></span>()</span><br><span class="line">&#123;</span><br><span class="line">    Route::get(<span class="string">'admin'</span>, <span class="function"><span class="title">function</span></span>()</span><br><span class="line">    &#123;</span><br><span class="line"></span><br><span class="line">    &#125;);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<p>先不管如何去写中间件中的执行逻辑，和如何实现中间件，我们先来看中间件的这种思路。那么以上代码中的meddleware数组就包含了一些列的中间件。<br>当用户要请求index的时候我们检测他是否登录</p>
+<p>当用户请求admin的时候 我们先把他发送到isLogin中间件。这个中间件去检测用户是否登录，之后发送到isAdmin检测时候为管理员<br>那么这样的好处是什么呢？<br>自然第一个好处是实现了逻辑分离与解耦，oop编程的第一要务就是要实现业务间的结构，看看面向对象编程的第一要素</p>
+<h3 id="单一职责原则（SRP）"><a href="#单一职责原则（SRP）" class="headerlink" title="单一职责原则（SRP）"></a>单一职责原则（SRP）</h3><blockquote>
+<p>一个类应该有且只有一个变化的原因。<br>There should never be more than one reason for a class to change.</p>
+</blockquote>
+<p>这么做的目的是什么呢？目的除了让我们的代码更加清晰，利于测试之外也要实现面向对象编程的另一个要素</p>
+<h3 id="开放封闭原则（OCP）"><a href="#开放封闭原则（OCP）" class="headerlink" title="开放封闭原则（OCP）"></a>开放封闭原则（OCP）</h3><blockquote>
+<p>既开放又封闭，对扩展是开放的，对更改是封闭的！<br> 扩展即扩展现行的模块，当我们软件的实际应用发生改变时，出现新的需求，就需要我们对模块进行扩展，使其能够满足新的需求！</p>
+</blockquote>
+<p> 对比以上两种方式，如果用继承来解决的话，首先就不符合SRP原则。另外在需要进行业务调整，逻辑修改的时候就更加不方便了，需要修改类的业务执行逻辑，而一点项目复杂起来之后，能保证每一次的修改都不会有遗漏的子类吗，同时每一次的修改都要进行反复测试，已保证程序不会出错。</p>
+<p> 你看，我们只是调整一下用户访问的限制问题就可以看出两种方法哪个更优雅，利用中间件我们只需要配置路由参数就可以做到灵活运用，完全不需要去修改已经写好的类，非常符合开闭原则。</p>
+<p> 当然中间件的威力远远不止于此，要知道一个中间件不但可以在请求进入的时候执行逻辑，同时也可以在请求之后进行一些逻辑处理，来看看lavarel的中间件定义。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">class LoginMiddleware implements Middleware &#123;</span><br><span class="line">    public <span class="keyword">function</span> handle(<span class="variable">$request</span>, Closure <span class="variable">$next</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        //请求进入</span><br><span class="line">        <span class="keyword">if</span>(!isLogin()) &#123;</span><br><span class="line">            redirect(<span class="string">'login'</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="variable">$response</span> = <span class="variable">$next</span>(<span class="variable">$request</span>);</span><br><span class="line">        // 请求返回了。</span><br><span class="line">        // 记录入日志xxx login  时间 请求的操作 等等</span><br><span class="line">            <span class="built_in">log</span>(<span class="string">'xxx is login at xxxxx'</span>);</span><br><span class="line">        <span class="built_in">return</span> <span class="variable">$response</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>关于更多的一些中间件的知识 大家可以自己google搜索一下，其实中间件的思路 我们以前也都接触过 比如 AOP  面向横切面编程，hook机制，都是为了解决面向对象编程中日益庞大的继承，以及业务越来越负责的场景。<br>现在一些新的框架比如koa 已经完全使用中间件来处理</p>
+<p>灵活中间件，让你的代码优雅起来吧</p>
+
+      
+    </div>
+    
+  </div>
+  
+    
+<nav id="article-nav">
+  
+  
+    <a href="/2016/05/31/javascript-and-or/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">javascript中 &amp; | &amp;&amp; || 的那些事</div>
+      <strong class="article-nav-caption">></strong>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+<div class="share_jia">
+	<!-- JiaThis Button BEGIN -->
+	<div class="jiathis_style">
+		<span class="jiathis_txt">分享到: &nbsp; </span>
+		<a class="jiathis_button_facebook"></a> 
+    <a class="jiathis_button_twitter"></a>
+    <a class="jiathis_button_plus"></a> 
+    <a class="jiathis_button_tsina"></a>
+		<a class="jiathis_button_cqq"></a>
+		<a class="jiathis_button_douban"></a>
+		<a class="jiathis_button_weixin"></a>
+		<a class="jiathis_button_tumblr"></a>
+    <a href="http://www.jiathis.com/share" class="jiathis jiathis_txt jtico jtico_jiathis" target="_blank"></a>
+	</div>
+	<script type="text/javascript" src="http://v3.jiathis.com/code/jia.js?uid=1405949716054953" charset="utf-8"></script>
+	<!-- JiaThis Button END -->
+</div>
+
+
+
+
+
+
+<div class="duoshuo">
+	<!-- 多说评论框 start -->
+	<div class="ds-thread" data-thread-key="middleware" data-title="什么是middleware中间件，为什么你需要了解中间件" data-url="http://pickknow.github.io/2016/06/03/middleware/"></div>
+	<!-- 多说评论框 end -->
+	<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+	<script type="text/javascript">
+	var duoshuoQuery = {short_name:"pickknow"};
+	(function() {
+		var ds = document.createElement('script');
+		ds.type = 'text/javascript';ds.async = true;
+		ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+		ds.charset = 'UTF-8';
+		(document.getElementsByTagName('head')[0] 
+		 || document.getElementsByTagName('body')[0]).appendChild(ds);
+	})();
+	</script>
+	<!-- 多说公共JS代码 end -->
+</div>
+
+
+
+
+</div>
+      <footer id="footer">
+  <div class="outer">
+    <div id="footer-info">
+    	<div class="footer-left">
+    		&copy; 2016 Jason
+    	</div>
+      	<div class="footer-right">
+      		<a href="http://hexo.io/" target="_blank">Hexo</a>  Theme <a href="https://github.com/litten/hexo-theme-yilia" target="_blank">Yilia</a> by Litten
+      	</div>
+    </div>
+  </div>
+</footer>
+    </div>
+    
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+
+
+<script>
+	var yiliaConfig = {
+		fancybox: true,
+		mathjax: true,
+		animate: true,
+		isHome: false,
+		isPost: true,
+		isArchive: false,
+		isTag: false,
+		isCategory: false,
+		open_in_new: false
+	}
+</script>
+<script src="http://7.url.cn/edu/jslib/comb/require-2.1.6,jquery-1.9.1.min.js"></script>
+<script src="/js/main.js"></script>
+
+
+
+
+
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+        processEscapes: true,
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    }
+});
+
+MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+        all[i].SourceElement().parentNode.className += ' has-jax';                 
+    }       
+});
+</script>
+
+<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+  </div>
+</body>
+</html>
