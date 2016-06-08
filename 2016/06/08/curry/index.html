@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" >
+  <title>javascript 闭包，curry的一些研究 | pickknow</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="在本篇文章中我们会涉及到javascript的闭包，函数式，以及科里化的一些问题在javascript中函数是一等公民，我们可以使用闭包，可以使用高阶函数，来让我们的程序更加简洁，逻辑更加清晰。
+闭包谈到闭包就必须要谈到变量作用域的问题，这方面的资料可自行搜索，我们现在先看一看闭包的几段代码">
+<meta property="og:type" content="article">
+<meta property="og:title" content="javascript 闭包，curry的一些研究">
+<meta property="og:url" content="http://pickknow.github.io/2016/06/08/curry/index.html">
+<meta property="og:site_name" content="pickknow">
+<meta property="og:description" content="在本篇文章中我们会涉及到javascript的闭包，函数式，以及科里化的一些问题在javascript中函数是一等公民，我们可以使用闭包，可以使用高阶函数，来让我们的程序更加简洁，逻辑更加清晰。
+闭包谈到闭包就必须要谈到变量作用域的问题，这方面的资料可自行搜索，我们现在先看一看闭包的几段代码">
+<meta property="og:updated_time" content="2016-06-08T04:32:24.986Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="javascript 闭包，curry的一些研究">
+<meta name="twitter:description" content="在本篇文章中我们会涉及到javascript的闭包，函数式，以及科里化的一些问题在javascript中函数是一等公民，我们可以使用闭包，可以使用高阶函数，来让我们的程序更加简洁，逻辑更加清晰。
+闭包谈到闭包就必须要谈到变量作用域的问题，这方面的资料可自行搜索，我们现在先看一看闭包的几段代码">
+  
+    <link rel="alternative" href="/atom.xml" title="pickknow" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+
+<body>
+  <div id="container">
+    <div class="left-col">
+    <div class="overlay"></div>
+<div class="intrude-less">
+	<header id="header" class="inner">
+		<a href="/" class="profilepic">
+			
+			<img lazy-src="http://o80w6y0vq.bkt.clouddn.com/githubavatar.jpg" class="js-avatar">
+			
+		</a>
+
+		<hgroup>
+		  <h1 class="header-author"><a href="/">Jason</a></h1>
+		</hgroup>
+
+		
+		<p class="header-subtitle">上得了厅堂,下得了厨房,写得了代码,查得了异常,谈得了业务,跑得了市场,玩得了小清新,咽得下重口味</p>
+		
+
+		
+			<div class="switch-btn">
+				<div class="icon">
+					<div class="icon-ctn">
+						<div class="icon-wrap icon-house" data-idx="0">
+							<div class="birdhouse"></div>
+							<div class="birdhouse_holes"></div>
+						</div>
+						<div class="icon-wrap icon-ribbon hide" data-idx="1">
+							<div class="ribbon"></div>
+						</div>
+						
+						
+						<div class="icon-wrap icon-me hide" data-idx="3">
+							<div class="user"></div>
+							<div class="shoulder"></div>
+						</div>
+						
+					</div>
+					
+				</div>
+				<div class="tips-box hide">
+					<div class="tips-arrow"></div>
+					<ul class="tips-inner">
+						<li>菜单</li>
+						<li>标签</li>
+						
+						
+						<li>关于我</li>
+						
+					</ul>
+				</div>
+			</div>
+		
+
+		<div class="switch-area">
+			<div class="switch-wrap">
+				<section class="switch-part switch-part1">
+					<nav class="header-menu">
+						<ul>
+						
+							<li><a href="/">主页</a></li>
+				        
+							<li><a href="/archives">所有文章</a></li>
+				        
+						</ul>
+					</nav>
+					<nav class="header-nav">
+						<div class="social">
+							
+								<a class="github" target="_blank" href="https://github.com/pickknow" title="github">github</a>
+					        
+								<a class="weibo" target="_blank" href="http://weibo.com/2039537684/" title="weibo">weibo</a>
+					        
+						</div>
+					</nav>
+				</section>
+				
+				
+				<section class="switch-part switch-part2">
+					<div class="widget tagcloud" id="js-tagcloud">
+						<a href="/tags/curry/" style="font-size: 10px;">curry</a> <a href="/tags/gihub/" style="font-size: 10px;">gihub</a> <a href="/tags/javascript/" style="font-size: 20px;">javascript</a> <a href="/tags/php/" style="font-size: 10px;">php</a> <a href="/tags/函数式/" style="font-size: 10px;">函数式</a> <a href="/tags/程序设计/" style="font-size: 10px;">程序设计</a> <a href="/tags/设计模式/" style="font-size: 10px;">设计模式</a>
+					</div>
+				</section>
+				
+				
+				
+
+				
+				
+				<section class="switch-part switch-part3">
+				
+					<div id="js-aboutme">我是谁，我从哪里来，我到哪里去？我就是我，是颜色不一样的吃货…</div>
+				</section>
+				
+			</div>
+		</div>
+	</header>				
+</div>
+
+    </div>
+    <div class="mid-col">
+      <nav id="mobile-nav">
+  	<div class="overlay">
+  		<div class="slider-trigger"></div>
+  		<h1 class="header-author js-mobile-header hide">Jason</h1>
+  	</div>
+	<div class="intrude-less">
+		<header id="header" class="inner">
+			<div class="profilepic">
+			
+				<img lazy-src="http://o80w6y0vq.bkt.clouddn.com/githubavatar.jpg" class="js-avatar">
+			
+			</div>
+			<hgroup>
+			  <h1 class="header-author">Jason</h1>
+			</hgroup>
+			
+			<p class="header-subtitle">上得了厅堂,下得了厨房,写得了代码,查得了异常,谈得了业务,跑得了市场,玩得了小清新,咽得下重口味</p>
+			
+			<nav class="header-menu">
+				<ul>
+				
+					<li><a href="/">主页</a></li>
+		        
+					<li><a href="/archives">所有文章</a></li>
+		        
+		        <div class="clearfix"></div>
+				</ul>
+			</nav>
+			<nav class="header-nav">
+				<div class="social">
+					
+						<a class="github" target="_blank" href="https://github.com/pickknow" title="github">github</a>
+			        
+						<a class="weibo" target="_blank" href="http://weibo.com/2039537684/" title="weibo">weibo</a>
+			        
+				</div>
+			</nav>
+		</header>				
+	</div>
+</nav>
+
+      <div class="body-wrap"><article id="post-curry" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2016/06/08/curry/" class="article-date">
+  	<time datetime="2016-06-08T03:03:39.000Z" itemprop="datePublished">2016-06-08</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      javascript 闭包，curry的一些研究
+    </h1>
+  
+
+      </header>
+      
+      <div class="article-info article-info-post">
+        
+	<div class="article-tag tagcloud">
+		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/curry/">curry</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/javascript/">javascript</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/函数式/">函数式</a></li></ul>
+	</div>
+
+        
+
+        <div class="clearfix"></div>
+      </div>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>在本篇文章中我们会涉及到javascript的闭包，函数式，以及科里化的一些问题<br>在javascript中函数是一等公民，我们可以使用闭包，可以使用高阶函数，来让我们的程序更加简洁，逻辑更加清晰。</p>
+<h3 id="闭包"><a href="#闭包" class="headerlink" title="闭包"></a>闭包</h3><p>谈到闭包就必须要谈到变量作用域的问题，这方面的资料可自行搜索，我们现在先看一看闭包的几段代码<br><a id="more"></a></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="function"><span class="title">f1</span></span>() &#123;</span><br><span class="line">    const n = 1</span><br><span class="line">    <span class="keyword">function</span> <span class="function"><span class="title">f2</span></span>() &#123;</span><br><span class="line">        console.log(n)</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">return</span> f2</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">function</span> <span class="function"><span class="title">div</span></span>()&#123;</span><br><span class="line">    const div = $(<span class="string">'#div'</span>)</span><br><span class="line">    <span class="built_in">return</span> <span class="keyword">function</span>(html)&#123;</span><br><span class="line">        div.html(html)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>以上两种都是一种闭包的使用，先将某一个变量定义，之后返回新的函数，再返回的新函数中依然记录了预先定义的变量。那么我们可以着呀个使用</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">const fa = f1()</span><br><span class="line">fa() // 1</span><br><span class="line">const divHtml = div()</span><br><span class="line">divHtml(<span class="string">'somethings'</span>) //在id为div的标签中 写入想要插入的数据</span><br></pre></td></tr></table></figure>
+<p>这么做有什么好处呢？ 首先我们可以在程序中定义好一些变量，之后我们将剩下的逻辑暴露出去，那么之后我们的调用就相对来说方便了，同时也减少了后续代码出错的几率，比如我们把f1中的n定义为一段欢迎语句，那么之后我们要打印这句话的时候，就只需要调用此函数就可以，或者插入数据的id标签不会因为少些一个字符而产生错误，闭包就不谈太多了。下面本篇的主角出厂</p>
+<h3 id="科里化-curry"><a href="#科里化-curry" class="headerlink" title="科里化 curry"></a>科里化 curry</h3><p>首先Wiki里对Curring(科里化)的定义:</p>
+<blockquote>
+<p>Currying is the technique of transforming a function that takes multiple arguments<br>in such a way that it can be called as a chain of functions each with a single argument.<br>意思是:将多拥有多个参数的函数形式转化为拥有单一参数的函数形式.</p>
+</blockquote>
+<p>我们先从一个最简单的求和开始(以下尽量用es6的方式)<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">const add = (x, y) = x + y</span><br><span class="line">console.log(add(1,2)) //3</span><br></pre></td></tr></table></figure></p>
+<p>这是一个普通的求和函数，如果我们有个需求，要求计算1 加上 一对数字，如下</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">const add = (x, y) = x + y</span><br><span class="line">console.log(add(1,2)) //3</span><br><span class="line">console.log(add(1,3)) //4</span><br><span class="line">console.log(add(1,4)) //5</span><br><span class="line">console.log(add(1,5)) //6</span><br><span class="line">console.log(add(1,6)) //7</span><br><span class="line"></span><br><span class="line">console.log(add(2,2)) //4</span><br><span class="line">console.log(add(2,3)) //5</span><br><span class="line">console.log(add(2,4)) //6</span><br></pre></td></tr></table></figure>
+<p>这里每一个add都要填写一次1，为了减少重复，我们使用闭包的概念将函数进行curry</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">const add = x =&gt; y =&gt; x + y</span><br><span class="line">const add1 = add(1)</span><br><span class="line">add1(1)//2</span><br><span class="line">add1(2)//3</span><br><span class="line">add1(3)//4</span><br><span class="line"></span><br><span class="line">const add2 = add(2)</span><br><span class="line">add2(1) // 3</span><br><span class="line">add2(2) // 4</span><br><span class="line">add2(3) // 5</span><br></pre></td></tr></table></figure>
+<p>这里的add函数首先接受一个参数，然后把参数通过闭包缓存起来，返回一个闭包函数，这时候只要传入第二个参数，函数就会返回两个参数相加的结果</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">// 对数组求和</span><br><span class="line">const arr = [1,2,3,4]</span><br><span class="line">const add = arrs =&gt; arrs.reduce((a,b) =&gt; a + b)</span><br><span class="line">console.log(add(arr)) //10</span><br><span class="line">// 需求变更，需要先对数组元素加n 然后求和</span><br><span class="line">const add = n =&gt; arrs =&gt; arrs.map(item =&gt; item + n).reduce((a,b) =&gt;a + b)</span><br><span class="line"></span><br><span class="line">const add1 = add(1)</span><br><span class="line">console.log(add1(arr)) //14</span><br><span class="line"></span><br><span class="line">const add2 = add(1)</span><br><span class="line">console.log(add2(arr)) //18</span><br></pre></td></tr></table></figure>
+<p>更复杂的例子可以在掌握以后灵活运用</p>
+<h3 id="curry-函数"><a href="#curry-函数" class="headerlink" title="curry 函数"></a>curry 函数</h3><p>在多谈一点，以上都是每次要写一个函数来返回一个闭包的函数。那么可不可以用一个curry的函数来帮我们完成问题呢？<br>我们来定义一个通用的curry的函数看看</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line">const curry =  fa =&gt; &#123;</span><br><span class="line">  const curryN =  (len,receive,fn)  =&gt; (...args) =&gt;</span><br><span class="line">      len - args.length &lt;= 0</span><br><span class="line">      ? fn.apply(null,receive.concat(args))</span><br><span class="line">      : curryN(len - args.length,receive.concat(args),fn)</span><br><span class="line">      <span class="built_in">return</span> curryN(fa.length,[],fa)</span><br><span class="line">&#125;</span><br><span class="line">// 来实验一下</span><br><span class="line">const add = curry((a,b) =&gt; a + b)</span><br><span class="line">const add1 = add(1)</span><br><span class="line">add1(1)//2</span><br><span class="line">add1(2)//3</span><br><span class="line">add1(3)//4</span><br><span class="line"></span><br><span class="line">const add2 = add(2)</span><br><span class="line">add2(1) // 3</span><br><span class="line">add2(2) // 4</span><br><span class="line">add2(3) // 5</span><br><span class="line"></span><br><span class="line">// 更复杂一点的例子</span><br><span class="line">const arr = [1,2,3,4]</span><br><span class="line">const addV1 = n =&gt; arrs =&gt; arrs.map(item =&gt; item + n).reduce((a,b) =&gt;a + b)</span><br><span class="line">const addV2 = curry(addV1)</span><br><span class="line"></span><br><span class="line">const addV2_1 = addV2(1)</span><br><span class="line">console.log(addV2_1(arr)) //14</span><br><span class="line"></span><br><span class="line">const addV2_2 = addV2(2)</span><br><span class="line">console.log(addV2_2(arr)) //18</span><br></pre></td></tr></table></figure>
+<p>再看一个完整使用的例子</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">const srcLinks = [</span><br><span class="line"><span class="string">'http://a.hiphotos.baidu.com/image/pic/item/caef76094b36acaf166c991478d98d1000e99c4d.jpg'</span>,</span><br><span class="line"><span class="string">'http://c.hiphotos.baidu.com/image/pic/item/f703738da977391279688a89fc198618377ae288.jpg'</span>,</span><br><span class="line"><span class="string">'http://f.hiphotos.baidu.com/image/pic/item/a2cc7cd98d1001e904cc1be7bc0e7bec55e79761.jpg'</span></span><br><span class="line">]</span><br><span class="line">const makeSrc = srcs =&gt; srcs.map(item =&gt; $(<span class="string">'&lt;img /&gt;'</span>,&#123;src:item&#125;)) // 将链接变为DOM</span><br><span class="line">const makeDiv = curry((id,imgs) =&gt; $(id).html(imgs)) //将DOM加入指定的id</span><br><span class="line"></span><br><span class="line">const appCurry = curry((fa,fb,links) =&gt; fa(fb(links)))</span><br><span class="line">const app = appCurry(makeDiv(<span class="string">'body'</span>),makeSrc)</span><br><span class="line">// 之后整个世界清静了。</span><br><span class="line">app(srcLinks)  // 好了图片显示了</span><br><span class="line">// 这里为了演示方便我们使用了固定数组，当然你也可以把他换成ajax 过来的数据</span><br><span class="line">// 另外代码也可以在优化的，试试看把 app变成传入一个元素id，和 links 就能显示图片，这样就更灵活了。你可以指定他显示到任何地方啦！！！</span><br></pre></td></tr></table></figure>
+<p><a href="https://jsfiddle.net/pickknow/jy8m3ay5/3/" target="_blank" rel="external">Demo 演示请看这里</a></p>
+
+      
+    </div>
+    
+  </div>
+  
+    
+<nav id="article-nav">
+  
+  
+    <a href="/2016/06/03/middleware/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">什么是middleware中间件，为什么你需要了解中间件</div>
+      <strong class="article-nav-caption">></strong>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+<div class="share_jia">
+	<!-- JiaThis Button BEGIN -->
+	<div class="jiathis_style">
+		<span class="jiathis_txt">分享到: &nbsp; </span>
+		<a class="jiathis_button_facebook"></a> 
+    <a class="jiathis_button_twitter"></a>
+    <a class="jiathis_button_plus"></a> 
+    <a class="jiathis_button_tsina"></a>
+		<a class="jiathis_button_cqq"></a>
+		<a class="jiathis_button_douban"></a>
+		<a class="jiathis_button_weixin"></a>
+		<a class="jiathis_button_tumblr"></a>
+    <a href="http://www.jiathis.com/share" class="jiathis jiathis_txt jtico jtico_jiathis" target="_blank"></a>
+	</div>
+	<script type="text/javascript" src="http://v3.jiathis.com/code/jia.js?uid=1405949716054953" charset="utf-8"></script>
+	<!-- JiaThis Button END -->
+</div>
+
+
+
+
+
+
+<div class="duoshuo">
+	<!-- 多说评论框 start -->
+	<div class="ds-thread" data-thread-key="curry" data-title="javascript 闭包，curry的一些研究" data-url="http://pickknow.github.io/2016/06/08/curry/"></div>
+	<!-- 多说评论框 end -->
+	<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+	<script type="text/javascript">
+	var duoshuoQuery = {short_name:"pickknow"};
+	(function() {
+		var ds = document.createElement('script');
+		ds.type = 'text/javascript';ds.async = true;
+		ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+		ds.charset = 'UTF-8';
+		(document.getElementsByTagName('head')[0] 
+		 || document.getElementsByTagName('body')[0]).appendChild(ds);
+	})();
+	</script>
+	<!-- 多说公共JS代码 end -->
+</div>
+
+
+
+
+</div>
+      <footer id="footer">
+  <div class="outer">
+    <div id="footer-info">
+    	<div class="footer-left">
+    		&copy; 2016 Jason
+    	</div>
+      	<div class="footer-right">
+      		<a href="http://hexo.io/" target="_blank">Hexo</a>  Theme <a href="https://github.com/litten/hexo-theme-yilia" target="_blank">Yilia</a> by Litten
+      	</div>
+    </div>
+  </div>
+</footer>
+    </div>
+    
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+
+
+<script>
+	var yiliaConfig = {
+		fancybox: true,
+		mathjax: true,
+		animate: true,
+		isHome: false,
+		isPost: true,
+		isArchive: false,
+		isTag: false,
+		isCategory: false,
+		open_in_new: false
+	}
+</script>
+<script src="http://7.url.cn/edu/jslib/comb/require-2.1.6,jquery-1.9.1.min.js"></script>
+<script src="/js/main.js"></script>
+
+
+
+
+
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+        processEscapes: true,
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    }
+});
+
+MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+        all[i].SourceElement().parentNode.className += ' has-jax';                 
+    }       
+});
+</script>
+
+<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+  </div>
+</body>
+</html>
